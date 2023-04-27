@@ -14,6 +14,7 @@ on:
         options:
           - qa
           - production
+          - dv_review
 
 jobs:
   backup:
@@ -30,7 +31,7 @@ jobs:
           tf_vars_file=terraform/aks/workspace_variables/${{ github.event.inputs.environment }}_aks.tfvars.json
           tf_backend_vars_file=terraform/aks/workspace_variables/${{ github.event.inputs.environment }}_aks_backend.tfvars
           CLUSTER=$(jq -r '.cluster' ${tf_vars_file})
-          echo "APP_NAME=apply-$(jq -r '.paas_app_environment' ${tf_vars_file})" >> $GITHUB_ENV
+          echo "APP_NAME=apply-$(jq -r '.paas_app_environment' ${tf_vars_file})-3077" >> $GITHUB_ENV
           echo "STORAGE_ACCOUNT_RG=$(awk '/resource_group_name/ {print $3}' ${tf_backend_vars_file} | tr -d '"')" >> $GITHUB_ENV
           . ./global_config/${{ github.event.inputs.environment }}_aks.sh
           SERVICE_SHORT=att
@@ -49,6 +50,8 @@ jobs:
               echo "unknown cluster"
               ;;
           esac
+          echo "CLUSTER_RG=s189d01-tsc-dv-rg" >> $GITHUB_ENV
+          echo "CLUSTER_NAME=s189d01-tsc-cluster5-aks" >> $GITHUB_ENV
           echo "BACKUP_ARCHIVE_NAME=apply_${{ github.event.inputs.environment }}_$(date +"%F").sql.gz" >> $GITHUB_ENV
           echo "KEY_VAULT_NAME=$(jq -r '.key_vault_name' ${tf_vars_file})" >> $GITHUB_ENV
           echo "DB_NAME=apply-postgres-${{ github.event.inputs.environment }}-snapshot" >> $GITHUB_ENV

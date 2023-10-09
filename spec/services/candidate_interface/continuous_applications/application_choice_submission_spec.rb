@@ -8,6 +8,78 @@ RSpec.describe CandidateInterface::ContinuousApplications::ApplicationChoiceSubm
   let(:application_form) { create(:application_form) }
   let(:application_choice) { create(:application_choice, application_form:) }
 
+  describe 'NEW validations' do
+    # when apply closed
+    # when apply open but course closed
+    # when apply open and course open
+    context 'when candidate can not apply outside of the cycle' do
+      it 'adds error to application choice' do
+        travel_temporarily_to(Time.zone.local(2023, 10, 4)) do
+          expect(application_choice_submission).not_to be_valid
+          expect(application_choice_submission.errors[:application_choice]).to include(
+            'This course is not yet open to applications. You’ll be able to submit your application on 4 August 2023.',
+          )
+        end
+      end
+    end
+
+    context 'when apply open but course closed' do
+      it 'adds error to application choice' do
+        travel_temporarily_to(mid_cycle) do
+          application_choice.course.update(applications_open_from: 1.day.from_now)
+
+          expect(application_choice_submission).not_to be_valid
+          expect(application_choice_submission.errors[:application_choice]).to include(
+            "This course is not yet open to applications. You’ll be able to submit your application on #{1.day.from_now.to_fs(:govuk_date)}.",
+          )
+        end
+      end
+    end
+
+    context 'course is full or sections incomplete' do
+      let(:application_form) { create(:application_form) }
+      let(:application_choice) { create(:application_choice, application_form:) }
+
+      before do
+        application_choice.course_option.update(vacancy_status: 'no_vacancies')
+      end
+
+      it 'adds error to application choice' do
+        view = ActionView::Base.new(ActionView::LookupContext::DetailsKey.view_context_class(ActionView::Base), {}, ApplicationController.new)
+        travel_temporarily_to(mid_cycle) do
+          expect(application_choice_submission).not_to be_valid
+          expect(application_choice_submission.errors[:application_choice]).to include(
+            <<~MSG,
+              You cannot submit this application as the course is no longer available.
+
+              #{view.govuk_link_to('Remove this application', Rails.application.routes.url_helpers.candidate_interface_continuous_applications_confirm_destroy_course_choice_path(application_choice.id))} and search for other courses.
+            MSG
+          )
+        end
+      end
+    end
+
+    context 'when course is not open for applications' do
+      let(:course) do
+        create(:course, :open_on_apply, name: 'Primary', code: '2XT2', applications_open_from: 2.days.from_now)
+      end
+      let(:course_option) { create(:course_option, course:) }
+      let(:application_form) { create(:application_form, :completed) }
+      let(:application_choice) do
+        create(:application_choice, :unsubmitted, course_option:, application_form:)
+      end
+
+      it 'adds error to application choice' do
+        travel_temporarily_to(Time.zone.local(2023, 10, 11)) do
+          expect(application_choice_submission.valid?).to be_falsey
+          expect(application_choice_submission.errors[:application_choice]).to include(
+            "You cannot submit this application now because the course has not opened. You will be able to submit it from #{course.applications_open_from.to_fs(:govuk_date)}",
+          )
+        end
+      end
+    end
+  end
+
   describe 'validations' do
     context 'when your details are incomplete' do
       let(:application_form) { create(:application_form, :minimum_info) }

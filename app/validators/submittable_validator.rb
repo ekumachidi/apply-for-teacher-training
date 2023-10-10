@@ -8,6 +8,7 @@ class SubmittableValidator < ActiveModel::EachValidator
       applications_closed
       course_unavailable
       incomplete_details
+      incomplete_primary_course_details
     ]
 
     error = scenarios.lazy.filter_map { |scenario| send(scenario, application_choice) }.first
@@ -21,10 +22,24 @@ class SubmittableValidator < ActiveModel::EachValidator
 
 private
 
-  def incomplete_details(application_choice)
-    sections = CandidateInterface::ApplicationFormSections.new(application_form: application_choice.application_form, application_choice:)
+  def incomplete_primary_course_details(application_choice)
+    return if !application_choice.science_gcse_needed? && sections(application_choice).all_completed?
 
-    return if !application_choice.science_gcse_needed? && sections.all_completed?
+    {
+      key: :incomplete_primary_course_details,
+      message: <<~MSG,
+        To apply for a Primary course, you need a GCSE in science at grade 4 (C) or above, or equivalent.
+
+        Add your science GCSE grade (or equivalent). You can then submit this application.
+
+        Your application will be saved as a draft while you finish adding your details.
+      MSG
+    }
+  end
+
+  def incomplete_details(application_choice)
+    return if application_choice.science_gcse_needed? && !sections(application_choice).completed?(:science_gcse)
+    return if sections(application_choice).all_completed?
 
     {
       key: :incomplete_details,
@@ -75,5 +90,9 @@ private
 
   def view
     @view ||= ActionView::Base.new(ActionView::LookupContext::DetailsKey.view_context_class(ActionView::Base), {}, ApplicationController.new)
+  end
+
+  def sections(application_choice)
+    CandidateInterface::ApplicationFormSections.new(application_form: application_choice.application_form, application_choice:)
   end
 end

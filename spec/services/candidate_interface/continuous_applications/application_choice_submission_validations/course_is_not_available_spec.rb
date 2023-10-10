@@ -20,7 +20,7 @@ RSpec.describe 'Course is not available', time: CycleTimetableHelper.mid_cycle d
   end
 
   context 'course is full' do
-    let(:course_option) { create(:course_option, vacancy_status: 'no_vacancies',course: course) }
+    let(:course_option) { create(:course_option, :no_vacancies, course: course) }
     let(:application_choice) { create(:application_choice, course_option: course_option, application_form:) }
 
     it 'adds error to application choice submission' do
@@ -53,9 +53,9 @@ RSpec.describe 'Course is not available', time: CycleTimetableHelper.mid_cycle d
 
   def message(application_choice)
     <<~MSG
-    You cannot submit this application as the course is no longer available.
+      You cannot submit this application as the course is no longer available.
 
-    #{view.govuk_link_to('Remove this application', Rails.application.routes.url_helpers.candidate_interface_continuous_applications_confirm_destroy_course_choice_path(application_choice.id))} and search for other courses.
-  MSG
+      #{view.govuk_link_to('Remove this application', Rails.application.routes.url_helpers.candidate_interface_continuous_applications_confirm_destroy_course_choice_path(application_choice.id))} and search for other courses.
+    MSG
   end
 end

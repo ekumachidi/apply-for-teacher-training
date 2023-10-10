@@ -1,3 +1,7 @@
+# = Add error to Application submission`
+#
+# Add a single error based on prioritisation. The first error failure has it's
+# message added to the validations
 class SubmittableValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, application_choice)
     scenarios = %i[
@@ -17,10 +21,12 @@ class SubmittableValidator < ActiveModel::EachValidator
 private
 
   def course_unavailable(application_choice)
-
-
     view = ActionView::Base.new(ActionView::LookupContext::DetailsKey.view_context_class(ActionView::Base), {}, ApplicationController.new)
+    course = application_choice.current_course
 
+    return if !course.full? &&
+              application_choice.course_option.site_still_valid? &&
+              course.exposed_in_find?
 
     {
       key: :course_unavailable,

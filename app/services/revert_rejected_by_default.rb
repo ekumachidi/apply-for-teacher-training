@@ -16,7 +16,7 @@ class RevertRejectedByDefault
 
           # do not continue if the application has an accepted offer
           next if statuses_for_form.any? do |s|
-            ApplicationStateChange::ACCEPTED_STATES.include?(s.to_sym)
+            ApplicationStateChange.accepted.include?(s.to_sym)
           end
 
           application_choice.update!(

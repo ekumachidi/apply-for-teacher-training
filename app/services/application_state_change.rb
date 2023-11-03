@@ -203,10 +203,9 @@ class ApplicationStateChange
   # Application Progression States
   # Unsubmitted -> Decision Pending -> Offered -> Success/Unsuccess
 
-  ACCEPTED_STATES = %i[pending_conditions conditions_not_met recruited offer_deferred].freeze
-  OFFERED_STATES = (ACCEPTED_STATES + %i[declined offer offer_withdrawn]).freeze
+  OFFERED_STATES = (accepted + %i[declined offer offer_withdrawn]).freeze
 
-  POST_OFFERED_STATES = (ACCEPTED_STATES + %i[declined offer_withdrawn]).freeze
+  POST_OFFERED_STATES = (accepted + %i[declined offer_withdrawn]).freeze
 
   UNSUCCESSFUL_STATES = %i[withdrawn cancelled rejected declined conditions_not_met offer_withdrawn application_not_sent inactive].freeze
   SUCCESSFUL_STATES = %i[pending_conditions offer offer_deferred recruited].freeze
@@ -219,7 +218,7 @@ class ApplicationStateChange
 
   REAPPLY_STATUSES = %i[rejected cancelled withdrawn declined offer_withdrawn].freeze
   # Used to determine if a candidate can add another application to their form
-  IN_PROGRESS_STATES = decision_pending + ACCEPTED_STATES + %i[offer].freeze
+  IN_PROGRESS_STATES = decision_pending + accepted + %i[offer].freeze
 
 private
 

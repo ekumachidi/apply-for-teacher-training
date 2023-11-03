@@ -292,7 +292,7 @@ class ApplicationForm < ApplicationRecord
   end
 
   def count_of_in_progress_applications
-    application_choices.count { |choice| ApplicationStateChange::IN_PROGRESS_STATES.include?(choice.status.to_sym) }
+    application_choices.count { |choice| ApplicationStateChange.in_progress.include?(choice.status.to_sym) }
   end
 
   def can_add_more_choices?

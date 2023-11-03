@@ -280,7 +280,7 @@ class ApplicationForm < ApplicationRecord
   end
 
   def count_unsuccessful_choices(count_inactive: true)
-    application_choices.count { |choice| (count_inactive || choice.status.to_sym != :inactive) && ApplicationStateChange::UNSUCCESSFUL_STATES.include?(choice.status.to_sym) }
+    application_choices.count { |choice| (count_inactive || choice.status.to_sym != :inactive) && ApplicationStateChange.unsuccessful.include?(choice.status.to_sym) }
   end
 
   def reached_maximum_unsuccessful_choices?
@@ -315,12 +315,12 @@ class ApplicationForm < ApplicationRecord
 
   def ended_without_success?
     application_choices.present? &&
-      application_choices.map(&:status).map(&:to_sym).all? { |status| ApplicationStateChange::UNSUCCESSFUL_STATES.include?(status) }
+      application_choices.map(&:status).map(&:to_sym).all? { |status| ApplicationStateChange.unsuccessful.include?(status) }
   end
 
   def provider_decision_made?
     application_choices.present? &&
-      application_choices.map(&:status).map(&:to_sym).all? { |status| (ApplicationStateChange::SUCCESSFUL_STATES + ApplicationStateChange::UNSUCCESSFUL_STATES).include?(status) }
+      application_choices.map(&:status).map(&:to_sym).all? { |status| (ApplicationStateChange::SUCCESSFUL_STATES + ApplicationStateChange.unsuccessful).include?(status) }
   end
 
   def incomplete_degree_information?
@@ -405,7 +405,7 @@ class ApplicationForm < ApplicationRecord
   end
 
   def number_of_unsuccessful_application_choices
-    application_choices.where.not(status: ApplicationStateChange::UNSUCCESSFUL_STATES).count
+    application_choices.where.not(status: ApplicationStateChange.unsuccessful).count
   end
 
   def maximum_number_of_course_choices

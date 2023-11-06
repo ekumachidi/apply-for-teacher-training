@@ -33,6 +33,8 @@ module Publications
   private
 
     def current_report
+      return Publications::MonthlyStatistics::MonthlyStatisticsReport.last
+
       return MonthlyStatisticsTimetable.report_for_current_period if params[:month].blank? && params[:year].blank?
 
       if params[:year].present?

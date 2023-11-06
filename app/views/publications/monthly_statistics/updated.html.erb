@@ -167,6 +167,47 @@
 </div>
 
 <%= render CandidateInterface::MonthlyStatisticsTableComponent.new(caption: 'Table 2.1: Candidates by most “advanced” application status', statistics: @presenter.statistics['candidates_by_status']) %>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <div class="app-grid-column--grey">
+
+        <h2 class="govuk-heading-m">Accepted</h2>
+        <p class="govuk-body-s">Candidates who have been accepted on to a course this cycle, or who deferred an application in a previous cycle and have had that place reconfirmed by the training provider for this cycle. Applications which have been withdrawn or deferred to the next cycle are excluded.</p>
+        <div class="" style="display: flex;">
+
+          <div class="govuk-!-display-inline-block" style="margin-right: 40px;">
+            <h3 class="govuk-heading-s" style="color: #1d70b8;"> This cycle</h3>
+            <h3 class="govuk-heading-s">45,617</h3>  </div>
+
+          <div class="govuk-!-display-inline-block">
+            <h3 class="govuk-heading-s" style="color: #1d70b8;"> Last cycle</h3>
+            <h3 class="govuk-heading-s">38,580</h3>  </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="govuk-grid-column-one-half">
+      <div class="app-grid-column--grey">
+
+        <h2 class="govuk-heading-m">All applications rejected</h2>
+        <p class="govuk-body-s">Candidates whose applications this cycle have all been rejected. Applications which were withdrawn are excluded. Candidates with one or more application this cycle that has not been rejected are included.</p>
+        <br>
+        <div class="" style="display: flex;">
+
+          <div class="govuk-!-display-inline-block" style="margin-right: 40px;">
+            <h3 class="govuk-heading-s" style="color: #1d70b8;"> This cycle</h3>
+            <h3 class="govuk-heading-s">45,617</h3>  </div>
+
+          <div class="govuk-!-display-inline-block">
+            <h3 class="govuk-heading-s" style="color: #1d70b8;"> Last cycle</h3>
+            <h3 class="govuk-heading-s">38,580</h3>  </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
 <style>
 
 .itt-report-tabs{

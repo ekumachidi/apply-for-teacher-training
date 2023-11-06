@@ -1,6 +1,7 @@
 namespace :publications, path: '/publications' do
   get '/monthly-statistics/temporarily-unavailable', to: 'monthly_statistics#temporarily_unavailable', as: :monthly_statistics_temporarily_unavailable
   get '/monthly-statistics/ITT(:year)' => 'monthly_statistics#show', as: :monthly_report_itt
+  get '/monthly-statistics/2023-update' => 'monthly_statistics#updated', as: :monthly_report_updated
   get '/monthly-statistics(/:month)' => redirect('/publications/monthly-statistics/temporarily-unavailable'), as: :monthly_report
   get '/monthly-statistics/:month/:export_type' => redirect('/publications/monthly-statistics/temporarily-unavailable'), as: :monthly_report_download
   # get '/monthly-statistics(/:month)' => 'monthly_statistics#show', as: :monthly_report

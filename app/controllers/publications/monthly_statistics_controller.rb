@@ -2,6 +2,11 @@ module Publications
   class MonthlyStatisticsController < ApplicationController
     rescue_from ActiveRecord::RecordNotFound, with: :render_404
 
+    def updated
+      @presenter = Publications::MonthlyStatisticsPresenter.new(current_report)
+      @csv_export_types_and_sizes = calculate_download_sizes(current_report)
+    end
+
     def show
       redirect_to publications_monthly_statistics_temporarily_unavailable_path if params[:year].to_i == RecruitmentCycle.current_year
 

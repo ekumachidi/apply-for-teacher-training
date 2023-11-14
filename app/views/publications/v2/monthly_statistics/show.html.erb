@@ -128,6 +128,9 @@
     <p class="govuk-body">These statistics collect data from <%= CycleTimetable.apply_opens.to_fs(:govuk_date) %> up to and including the day before they were published.</p>
     <p class="govuk-body">There will be monthly updates throughout the recruitment cycle.</p>
   </div>
+</div>
+
+<div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h2 class="govuk-heading-l" id="headline-statistics">2. Candidate headline statistics</h2>
 
@@ -141,9 +144,18 @@
   </div>
 </div>
 
-<% @presenter.headline_stats[:data].deep_merge(I18n.t('publications.itt_monthly_report_generator.status')).each do |_key, status| %>
-  <%= render Publications::StatusTotalsComponent.new(title: status[:title], summary: status[:summary], heading_one: 'This cycle', heading_two: 'Last cycle', status_total_one: status[:last_cycle], status_total_two: status[:this_cycle]) %>
-<% end %>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+  <% @presenter.headline_stats[:data].deep_merge(I18n.t('publications.itt_monthly_report_generator.status')).each_slice(2) do |row| %>
+    <% row.to_h.each do |_k, status| %>
+    <div class="govuk-grid-row">
+      <%= render Publications::StatusTotalsComponent.new(title: status[:title], summary: status[:summary], heading_one: 'This cycle', heading_two: 'Last cycle', status_total_one: status[:last_cycle], status_total_two: status[:this_cycle]) %>
+    </div>
+    <% end %>
+  <% end %>
+  </div>
+</div>
+
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">

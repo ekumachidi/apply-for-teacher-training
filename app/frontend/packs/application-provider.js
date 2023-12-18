@@ -7,7 +7,7 @@ import '../styles/application-provider.scss'
 import cookieBanners from './cookies/cookie-banners'
 import userSupportWebchat from './user_support_webchat'
 
-require.context('govuk-frontend/govuk/assets')
+require.context('govuk-frontend/dist/govuk')
 
 govUKFrontendInitAll()
 initWarnOnUnsavedChanges()

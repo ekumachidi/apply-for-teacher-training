@@ -393,7 +393,7 @@ class ApplicationForm < ApplicationRecord
   end
 
   def in_progress_applications
-    application_choices.reject(&:application_unsuccessful?)
+    application_choices.select(&:in_progress?)
   end
 
   def submitted_applications?

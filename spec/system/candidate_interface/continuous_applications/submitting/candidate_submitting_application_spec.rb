@@ -46,6 +46,8 @@ RSpec.feature 'Candidate submits the application', :continuous_applications do
     then_i_still_cannot_add_course_choices
 
     when_one_of_my_applications_becomes_inactive
+    page.driver.browser.refresh
+    binding.pry
     then_i_am_able_to_add_another_choice
   end
 

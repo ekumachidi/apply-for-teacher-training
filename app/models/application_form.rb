@@ -267,24 +267,37 @@ class ApplicationForm < ApplicationRecord
     ended_without_success? && CycleTimetable.apply_2_deadline_has_passed?(self)
   end
 
+  # Application Choice Limits
+  # 1. Limit the number of applciation choices that can be created
+  # 2. Limit the number of choices that can be submitted
+
+
+  # Created
+  # How many of the choices contribute to the limit
+  def count_active_choices
+    application_choices.count { |choice| ApplicationStateChange.active.include?(choice.status.to_sym) }
+  end
+
+  def available_application_choices_count
+    number_of_choices_candidate_can_make - count_active_choices
+  end
+
   def choices_left_to_make
-    number_of_choices_candidate_can_make - available_application_choices
+    available_application_choices_count
   end
 
   def number_of_choices_candidate_can_make
     MAXIMUM_NUMBER_OF_COURSE_CHOICES
   end
 
-  def available_application_choices
-    continuous_applications? ? application_choices.size - count_unsuccessful_choices : application_choices.size
+  def can_add_more_choices?
+    choices_left_to_make.positive?
   end
 
-  def count_unsuccessful_choices(count_inactive: true)
-    application_choices.count { |choice| (count_inactive || choice.status.to_sym != :inactive) && ApplicationStateChange.unsuccessful.include?(choice.status.to_sym) }
-  end
-
+  # Submitted
+  #
   def reached_maximum_unsuccessful_choices?
-    count_unsuccessful_choices(count_inactive: false) >= MAXIMUM_NUMBER_OF_UNSUCCESSFUL_APPLICATIONS
+    application_choices.count { |choice| ApplicationStateChange.unsuccessful.include?(choice.status.to_sym) } >= MAXIMUM_NUMBER_OF_UNSUCCESSFUL_APPLICATIONS
   end
 
   def can_submit_further_applications?
@@ -292,11 +305,7 @@ class ApplicationForm < ApplicationRecord
   end
 
   def count_of_in_progress_applications
-    application_choices.count { |choice| ApplicationStateChange.in_progress.include?(choice.status.to_sym) }
-  end
-
-  def can_add_more_choices?
-    choices_left_to_make.positive?
+    application_choices.count { |choice| ApplicationStateChange.in_progress.exclude?(choice.status.to_sym) }
   end
 
   def recruited?

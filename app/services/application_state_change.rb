@@ -69,6 +69,7 @@ class ApplicationStateChange
     terminal:                      %i[application_not_sent cancelled conditions_not_met declined inactive offer_withdrawn recruited rejected withdrawn],
 
     in_progress:                   %i[awaiting_provider_decision interviewing conditions_not_met offer_deferred pending_conditions recruited offer],
+    active:                        %i[unsubmitted awaiting_provider_decision interviewing conditions_not_met offer_deferred pending_conditions recruited offer],
     reapply:                       %i[cancelled declined offer_withdrawn rejected withdrawn],
     not_visible_to_provider:       %i[unsubmitted cancelled application_not_sent],
     visible_to_provider:           %i[awaiting_provider_decision conditions_not_met declined inactive interviewing offer offer_deferred offer_withdrawn pending_conditions recruited rejected withdrawn],
@@ -219,8 +220,13 @@ class ApplicationStateChange
     states_by_category[:terminal]
   end
 
+  # These are the states that contribute towards the limit of application choices a candidate may have concurrently
   def self.in_progress
     states_by_category[:in_progress]
+  end
+
+  def self.active
+    states_by_category[:active]
   end
 
   def self.reapply

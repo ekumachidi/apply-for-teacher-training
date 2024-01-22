@@ -21,7 +21,7 @@ module CandidateInterface
       end
 
       def review_path
-        if short_personal_statement?
+        if personal_statement_exists? && short_personal_statement?
           candidate_interface_continuous_applications_course_review_interruption_path(application_choice.id)
         else
           candidate_interface_continuous_applications_course_review_and_submit_path(application_choice.id)
@@ -32,6 +32,10 @@ module CandidateInterface
 
       def short_personal_statement?
         application_choice.application_form.becoming_a_teacher.scan(/\S+/).size < recommended_word_count
+      end
+
+      def personal_statement_exists?
+        application_choice.application_form.becoming_a_teacher.present?
       end
 
       def recommended_word_count
